@@ -1,74 +1,46 @@
-from pyrogram import Client
-from pyrogram.types import CallbackQuery, InlineKeyboardMarkup
+from pyrogram import Client, filters
+from pyrogram.types import CallbackQuery
+from data import users_data, save_users_data, Data
+from plugins.states import STATE_INPUT_1
 
-from data import Data
+@Client.on_callback_query(filters.regex("pyrogram_v2"))
+async def pyrogram_v2_chosen(_, query: CallbackQuery):
+    user_id = query.from_user.id
+    users_data[user_id] = {"step": STATE_INPUT_1}
+    save_users_data()
+    await query.message.edit_text(
+        f"{Data.PYROGRAM_TEXT} v2\n\nSend your first parameter (e.g., API_ID):"
+    )
+    await query.answer()
 
+@Client.on_callback_query(filters.regex("pyrogram_v3"))
+async def pyrogram_v3_chosen(_, query: CallbackQuery):
+    user_id = query.from_user.id
+    users_data[user_id] = {"step": STATE_INPUT_1}
+    save_users_data()
+    await query.message.edit_text(
+        f"{Data.PYROGRAM_TEXT} v3\n\nSend your first parameter (e.g., API_ID):"
+    )
+    await query.answer()
 
-@Client.on_callback_query()
-async def callbacks(_, query: CallbackQuery):
-    data = query.data
+@Client.on_callback_query(filters.regex("telethon_v2"))
+async def telethon_v2_chosen(_, query: CallbackQuery):
+    user_id = query.from_user.id
+    users_data[user_id] = {"step": STATE_INPUT_1}
+    save_users_data()
+    await query.message.edit_text(
+        f"{Data.TELETHON_TEXT} v2\n\nSend your first parameter (e.g., API_ID):"
+    )
+    await query.answer()
 
-    try:
-        if data == "home":
-            await query.message.edit_text(
-                Data.START_TEXT,
-                reply_markup=InlineKeyboardMarkup(
-                    Data.START_BUTTONS
-                )
-            )
+@Client.on_callback_query(filters.regex("telethon_v3"))
+async def telethon_v3_chosen(_, query: CallbackQuery):
+    user_id = query.from_user.id
+    users_data[user_id] = {"step": STATE_INPUT_1}
+    save_users_data()
+    await query.message.edit_text(
+        f"{Data.TELETHON_TEXT} v3\n\nSend your first parameter (e.g., API_ID):"
+    )
+    await query.answer()
 
-        elif data == "generate":
-            await query.message.edit_text(
-                Data.GENERATE_TEXT,
-                reply_markup=InlineKeyboardMarkup(
-                    Data.GENERATE_BUTTONS
-                )
-            )
-
-        elif data == "pyrogram":
-            await query.message.edit_text(
-                Data.PYROGRAM_TEXT,
-                reply_markup=InlineKeyboardMarkup(
-                    Data.PYROGRAM_BUTTONS
-                )
-            )
-
-        elif data == "telethon":
-            await query.message.edit_text(
-                Data.TELETHON_TEXT,
-                reply_markup=InlineKeyboardMarkup(
-                    Data.TELETHON_BUTTONS
-                )
-            )
-
-        elif data == "pyrogram_v2":
-            await query.message.edit_text(
-                "Pyrogram V2 selected.\n\n"
-                "Send your API_ID."
-            )
-
-        elif data == "pyrogram_v3":
-            await query.message.edit_text(
-                "Pyrogram V3 selected.\n\n"
-                "Send your API_ID."
-            )
-
-        elif data == "telethon_v2":
-            await query.message.edit_text(
-                "Telethon V2 selected.\n\n"
-                "Send your API_ID."
-            )
-
-        elif data == "telethon_v3":
-            await query.message.edit_text(
-                "Telethon V3 selected.\n\n"
-                "Send your API_ID."
-            )
-
-        await query.answer()
-
-    except Exception as e:
-        await query.answer(
-            str(e),
-            show_alert=True
-        )
+# (other callbacks for home, generate, etc. can be added similarly)
